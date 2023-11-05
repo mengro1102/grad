@@ -62,9 +62,10 @@ class ActorCritic():
         # prob = self.actor.call(state)
         prob = self.actor(np.array([state]))
         prob = prob.numpy()
+        print('action prob:',prob[0])
         dist = tfp.distributions.Categorical(probs=prob, dtype=tf.float32)
         action = dist.sample()
-                
+        print('action:',int(action.numpy()[0]))
         return int(action.numpy()[0])
     
     def actor_loss(self, prob, action, TD):

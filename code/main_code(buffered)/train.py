@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ''' Initialize '''
-channel = 10
+channel = 5
 time = (200)-1
 time_step = 0
 n_episodes = 100
 
 env = JammingEnv(n_channels=channel,max_steps=time)
 # agent = a2c(state_size=channel,action_size=channel)
-agent = ActorCritic()
+agent = ActorCritic(state_size=channel,action_size=channel)
 scores = []
 actor_loss = []
 critic_loss = []

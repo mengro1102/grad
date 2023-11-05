@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ''' Initialize '''
-channel = 10
+channel = 20
 time = (200)-1
 time_step = 0
 n_episodes = 100
@@ -55,7 +55,7 @@ for episode in range(n_episodes):
     # print('reward(episode):',episode_reward)
 
 ''' Graph Image Save'''
-img_path = 'C:/code/result/'
+img_path = 'C:/code/grad-1/code/result/'
     
 plt.plot(scores)
 plt.title('Score Graph (Reward for each Episode)')

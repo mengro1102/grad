@@ -10,7 +10,7 @@ from tensorflow import optimizers, losses
 
 from IPython.display import clear_output
 
-channel = 5
+channel = 10
 time = 200
 env = JammingEnv(n_channels=channel,max_steps=time)
 hidden_size = 32
