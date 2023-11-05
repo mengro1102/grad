@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ''' Initialize '''
-channel = 5
+channel = 20
 time = (200)-1
 time_step = 0
 n_episodes = 100
