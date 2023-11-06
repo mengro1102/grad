@@ -8,6 +8,7 @@ channel = 20
 time = (200)-1
 time_step = 0
 n_episodes = 100
+number_of_jammer = 2
 
 env = JammingEnv(n_channels=channel,max_steps=time)
 # agent = a2c(state_size=channel,action_size=channel)
@@ -32,7 +33,7 @@ for episode in range(n_episodes):
         action = agent.get_action(state)
         
         # TAKING ACTION
-        next_state, reward, done = env.step(action, time_step)
+        next_state, reward, done = env.step(action, time_step, number_of_jammer)
         time_step += 1
         aloss, closs = agent.train_step(state, action, reward, next_state, done)
         # Our new state is state

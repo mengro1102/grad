@@ -3,10 +3,10 @@ import numpy as np
 class JammingEnv:
     def __init__(self, n_channels=5, max_steps=200):
         self.n_channels = n_channels
-        self.state = np.zeros(n_channels)  # Initial state with all channels free
+        self.state = np.zeros(n_channels)
         # self.last_action = last_action
-        self.jammer_channel = np.random.randint(0, self.n_channels)  # Initialize with a random channel
-        self.sweep_direction = np.random.choice([-1, 1])  # Choose an initial sweep direction (-1: down, 1: up)
+        self.jammer_channel = np.random.randint(0, self.n_channels)
+        self.sweep_direction = np.random.choice([-1, 1])
         self.prev_action = None
         self.action_count = 0
         self.current_step = 0
@@ -14,30 +14,39 @@ class JammingEnv:
         self.observation_space = []
         
     def reset(self):
-        """Reset the environment to its initial state."""
         self.state = np.zeros(self.n_channels)
         # self.current_step = 0
         
         return self.state
    
-    def step(self, action, time_step):
+    def step(self, action, time_step, num_jammer):
         reward = 0
         self.reset()
-        '''
-        """ Jammer type = Random    """
-        self.jammer_channel = np.random.randint(0, self.n_channels)  # Randomly select a channel to jam
-        self.state[self.jammer_channel] = 1  # Jam the selected channel
-        """                         """
-        '''
-        """ Jammer type = Sweeping  """
-        self.jammer_channel += self.sweep_direction
-        if self.jammer_channel >= self.n_channels:
-            self.jammer_channel = 0
-        elif self.jammer_channel < 0:
-            self.jammer_channel = self.n_channels - 1
+        
+        # ===== Jammer =====
+        if num_jammer == 1: # Single Jammer
+            '''
+            self.jammer_channel = np.random.randint(0, self.n_channels)  # Randomly select a channel to jam
+            self.state[self.jammer_channel] = 1  # Jam the selected channel
+            '''
+            """ Jammer type = Sweeping  """
+            self.jammer_channel += self.sweep_direction
+            if self.jammer_channel >= self.n_channels:
+                self.jammer_channel = 0
+            elif self.jammer_channel < 0:
+                self.jammer_channel = self.n_channels - 1
 
-        self.state[self.jammer_channel] = 1  # Jam the selected channel 
-        """                         """
+            self.state[self.jammer_channel] = 1  # Jam the selected channel
+        else: # Multiple Jammer
+            self.jammer_channel += self.sweep_direction
+            if self.jammer_channel >= self.n_channels:
+                self.jammer_channel = 0
+            elif self.jammer_channel < 0:
+                self.jammer_channel = self.n_channels - 1
+            pass
+
+        
+        
         
         ''' Technical 
         if self.state[action] == 1:  # Jammed
