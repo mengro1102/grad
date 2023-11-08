@@ -48,8 +48,8 @@ for episode in range(n_episodes):
             break
 
 ''' Graph Image Save'''
-img_path = 'C:/code/result/'
-    
+img_path = 'C:/code/result/'    
+
 plt.plot(scores)
 plt.title('Score Graph (Reward for each Episode)')
 plt.ylabel('Reward')
