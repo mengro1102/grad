@@ -16,7 +16,6 @@ class Actor(Model):
         
         self.state_size = state_size
         self.action_size = action_size
-        # set the hidden layers
         self.layer1 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.layer2 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.policy = tf.keras.layers.Dense(self.action_size,activation='softmax')
@@ -30,10 +29,12 @@ class Actor(Model):
 class CriticV(Model):
     def __init__(
         self, 
-        state_size: int, 
+        state_size: int
     ):
         """Initialize."""
         super(CriticV, self).__init__()
+        
+        self.state_size = state_size
         self.layer1 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.layer2 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.value = tf.keras.layers.Dense(1, activation = None)
@@ -59,43 +60,32 @@ class ActorCritic():
         self.log_prob = None
         
     def get_action(self, state):
-        # prob = self.actor.call(state)
         prob = self.actor(np.array([state]))
-        prob = prob.numpy()
-        print('action prob:',prob[0])
+        # prob = prob.numpy()
         dist = tfp.distributions.Categorical(probs=prob, dtype=tf.float32)
         action = dist.sample()
-        print('action:',int(action.numpy()[0]))
-        return int(action.numpy()[0])
+        return int(action.numpy()[0]) 
     
     def actor_loss(self, prob, action, TD):
-        # print('Action Prob:',prob.numpy()[0],', Action:',action,', TD:',TD.numpy()[0])
         dist = tfp.distributions.Categorical(probs=prob, dtype=tf.float32)
         log_prob = dist.log_prob(action)
-        # print('log_prob:',log_prob.numpy()[0])
         loss = -log_prob*TD
-        # print('actor loss:',loss.numpy()[0])
         return loss
     
     def train_step(self, state, action, reward, next_state, done):
         state = np.array([state])
         next_state = np.array([next_state])
-        
+            
         with tf.GradientTape() as tape1, tf.GradientTape() as tape2:
             
             curr_P = self.actor(state, training=True)
             curr_Q = self.critic(state,training=True)
             next_Q = self.critic(next_state, training=True)
-            # print('curr_Q:',curr_Q.numpy()[0], ', next_Q:',next_Q.numpy()[0],', Reward:',reward)
             expected_Q = reward + self.gamma*next_Q*(1-int(done))
             TD = expected_Q - curr_Q
-            print('Reward:',reward)
-            # critic loss
             critic_loss = tf.keras.losses.MSE(expected_Q, curr_Q)
-            print('critic loss:',critic_loss.numpy()[0])
             actor_loss = self.actor_loss(curr_P, action, TD)
-            print('actor loss:',actor_loss.numpy()[0])
-            
+             
         actorGrads = tape1.gradient(actor_loss,  self.actor.trainable_variables)
         criticGrads = tape2.gradient(critic_loss, self.critic.trainable_variables)
         self.a_opt.apply_gradients(zip(actorGrads, self.actor.trainable_variables))

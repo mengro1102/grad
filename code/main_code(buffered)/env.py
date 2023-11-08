@@ -1,79 +1,62 @@
 import numpy as np
 
+class Jammer:
+    def __init__(self, initial_position, sweep_direction):
+        self.position = initial_position
+        self.sweep_direction = sweep_direction
+
+    def move(self, n_channels):
+        self.position += self.sweep_direction
+        if self.position >= n_channels:
+            self.position = 0
+        elif self.position < 0:
+            self.position = n_channels - 1
+
 class JammingEnv:
-    def __init__(self, n_channels=5, max_steps=200):
+    def __init__(self, n_channels=5, max_steps=200, num_jammers=1):
         self.n_channels = n_channels
         self.state = np.zeros(n_channels)
-        # self.last_action = last_action
-        self.jammer_channel = np.random.randint(0, self.n_channels)
-        self.sweep_direction = np.random.choice([-1, 1])
-        self.prev_action = None
+        self.num_jammers = num_jammers
+        self.jammers = [Jammer(initial_position=np.random.randint(0, self.n_channels), sweep_direction=np.random.choice([-1, 1])) for _ in range(num_jammers)]
+        self.done = False
         self.action_count = 0
-        self.current_step = 0
         self.max_steps = max_steps
-        self.observation_space = []
         
     def reset(self):
+        if self.done == True:
+            for jammer in self.jammers:
+                jammer.__init__(initial_position=np.random.randint(0, self.n_channels), sweep_direction=np.random.choice([-1, 1]))
         self.state = np.zeros(self.n_channels)
-        # self.current_step = 0
-        
+        self.buffer_index = 0
+        self.buffer_full = False
         return self.state
+    
+    def get_jammer_positions(self):
+        positions = [jammer.position for jammer in self.jammers]
+        return positions
    
-    def step(self, action, time_step, num_jammer):
+    def step(self, action, time_step):
         reward = 0
         self.reset()
-        
-        # ===== Jammer =====
-        if num_jammer == 1: # Single Jammer
-            '''
-            self.jammer_channel = np.random.randint(0, self.n_channels)  # Randomly select a channel to jam
-            self.state[self.jammer_channel] = 1  # Jam the selected channel
-            '''
-            """ Jammer type = Sweeping  """
-            self.jammer_channel += self.sweep_direction
-            if self.jammer_channel >= self.n_channels:
-                self.jammer_channel = 0
-            elif self.jammer_channel < 0:
-                self.jammer_channel = self.n_channels - 1
 
-            self.state[self.jammer_channel] = 1  # Jam the selected channel
-        else: # Multiple Jammer
-            self.jammer_channel += self.sweep_direction
-            if self.jammer_channel >= self.n_channels:
-                self.jammer_channel = 0
-            elif self.jammer_channel < 0:
-                self.jammer_channel = self.n_channels - 1
-            pass
-   
-          #test
-        
-        
-        ''' Technical 
+        for jammer in self.jammers:
+            jammer.move(self.n_channels)
+            self.state[jammer.position] = 1
+
         if self.state[action] == 1:  # Jammed
-            # reward = -self.n_channels * 10
-            reward = -self.n_channels * 10
-        else:
-            if self.prev_action == action:
-                reward = 1
-            else:
-                self.action_count += 1
-                reward = 1-(0.04*self.action_count)
-        '''
-        ''' Vanilla '''
-        if self.state[action] == 1:  # Jammed
-            reward = -1 # -self.n_channels
+            reward = -1
         else:
             reward = 1
-        
-        
+
         if time_step >= self.max_steps:
             done = True
+            self.done = done
         else:
             done = False
+            self.done = done
         
-        next_state = self.state.copy()
-        self.observation_space = next_state
-        
+        next_state = self.state
+
         return next_state, reward, done
         
     def render(self):

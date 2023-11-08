@@ -4,14 +4,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ''' Initialize '''
-channel = 20
+channel = 10
 time = (200)-1
 time_step = 0
-n_episodes = 100
-number_of_jammer = 2
+n_episodes = 10
+number_of_jammer = 1
 
-env = JammingEnv(n_channels=channel,max_steps=time)
-# agent = a2c(state_size=channel,action_size=channel)
+env = JammingEnv(n_channels=channel,max_steps=time,num_jammers=number_of_jammer)
 agent = ActorCritic(state_size=channel,action_size=channel)
 scores = []
 actor_loss = []
@@ -33,27 +32,20 @@ for episode in range(n_episodes):
         action = agent.get_action(state)
         
         # TAKING ACTION
-        next_state, reward, done = env.step(action, time_step, number_of_jammer)
+        next_state, reward, done = env.step(action, time_step)
         time_step += 1
         aloss, closs = agent.train_step(state, action, reward, next_state, done)
-        # Our new state is state
+        # jammer_positions = env.get_jammer_positions()
+        # print(jammer_positions)
         state = next_state
-        #print('reward(Timestep):',reward)
-        
         episode_reward += reward
-        
-        # if episode ends
         actor_loss.append(aloss[0].numpy())
         critic_loss.append(closs[0].numpy())
-        # print('actor_loss len:',len(actor_loss),', critic_loss len',len(critic_loss))
         
         if done:
             scores.append(episode_reward)
             print("Episode " + str(episode+1) + ": " + str(episode_reward))
-            # print('\nactor_loss:',actor_loss)
-            # print('\ncritic_loss:',critic_loss)
             break
-    # print('reward(episode):',episode_reward)
 
 ''' Graph Image Save'''
 img_path = 'C:/code/result/'
