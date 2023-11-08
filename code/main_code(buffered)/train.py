@@ -1,5 +1,6 @@
 from env import JammingEnv
 from a2c import ActorCritic
+from a2c import StateBuffer
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -7,9 +8,11 @@ import numpy as np
 channel = 10
 time = (200)-1
 time_step = 0
-n_episodes = 10
+n_episodes = 100
 number_of_jammer = 1
+buffer_size = 5
 
+buffer = StateBuffer(buffer_size, channel)
 env = JammingEnv(n_channels=channel,max_steps=time,num_jammers=number_of_jammer)
 agent = ActorCritic(state_size=channel,action_size=channel)
 scores = []
@@ -29,12 +32,14 @@ for episode in range(n_episodes):
 
     while not done:
         print(time_step)
-        action = agent.get_action(state)
+        buffer.add_state(state)
+        # print(buffer.get_buffer())
+        action = agent.get_action(buffer.get_buffer())
         
         # TAKING ACTION
         next_state, reward, done = env.step(action, time_step)
         time_step += 1
-        aloss, closs = agent.train_step(state, action, reward, next_state, done)
+        aloss, closs = agent.train_step(buffer.get_buffer(), action, reward, next_state, done)
         # jammer_positions = env.get_jammer_positions()
         # print(jammer_positions)
         state = next_state
