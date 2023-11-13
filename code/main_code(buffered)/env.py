@@ -43,11 +43,13 @@ class JammingEnv:
             jammer.move(self.n_channels)
             self.state[jammer.position] = 1
 
+        # print('state(env)',self.state)
         if self.state[action] == 1:  # Jammed
             reward = -1
         else:
             reward = 1
-
+        
+        print(reward)
         if time_step >= self.max_steps:
             done = True
             self.done = done

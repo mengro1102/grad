@@ -9,7 +9,10 @@ from env import JammingEnv
 hidden_size = 24
 buffer_size = 5
 class Actor(Model):
-    def __init__(self, state_size: int, action_size: int, 
+    def __init__(
+        self,
+        state_size: int,
+        action_size: int, 
     ):
         """Initialization."""
         super(Actor, self).__init__()
@@ -61,7 +64,7 @@ class StateBuffer:
         return self.buffer
 
     def is_full(self):
-        return len(self.buffer)+1 == self.buffer_size
+        return len(self.buffer) == self.buffer_size
     
 class ActorCritic():
     def __init__(self, state_size = 5, action_size = 5):
@@ -79,7 +82,7 @@ class ActorCritic():
         
     def get_action(self, buffer):
         prob = self.actor(np.array(buffer))
-        print(prob.numpy()[0]) 
+        # print('action prob',prob.numpy()[0]) 
         dist = tfp.distributions.Categorical(probs=prob, dtype=tf.float32)
         action = dist.sample()
         return int(action.numpy()[0]) 
