@@ -62,7 +62,7 @@ class RealTimeVisualizer:
             self.ax.set_xlabel('Time step')
             
             plt.draw()
-            plt.pause(0.1)
+            plt.pause(0.001)
             filepath = f"{self.save_folder}/image_{time_step}.png"
             plt.savefig(filepath)
         else:
@@ -107,7 +107,7 @@ class RealTimeVisualizer:
             self.ax.set_xlabel('Time step')
             
             plt.draw()
-            plt.pause(0.1)
+            plt.pause(0.001)
             filepath = f"{self.save_folder}/image_{time_step}.png"
             plt.savefig(filepath)
             # plt.savefig(filepath, bbox_inches="tight")

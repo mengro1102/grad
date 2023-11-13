@@ -1,32 +1,48 @@
 import numpy as np
-
+    
 class Jammer:
-    def __init__(self, initial_position, sweep_direction):
-        self.position = initial_position
-        self.sweep_direction = sweep_direction
+    def __init__(self, policy, n_channels):
+        self.policy = policy
+        self.n_channels = n_channels
+        self.sweep_direction = np.random.choice([-1, 1])
+        self.position = np.random.randint(0, self.n_channels)
 
-    def move(self, n_channels):
+    def jam_channel(self):
+        if self.policy == "sweeping":
+            return self.sweeping_policy()
+        elif self.policy == "random":
+            return self.random_policy()
+        else:
+            raise ValueError("Unsupported jamming policy")
+
+    def sweeping_policy(self):
         self.position += self.sweep_direction
-        if self.position >= n_channels:
+        if self.position >= self.n_channels:
             self.position = 0
         elif self.position < 0:
-            self.position = n_channels - 1
+            self.position = self.n_channels - 1
 
+        return self.position
+
+    def random_policy(self):
+        self.position = np.random.randint(0, self.n_channels) 
+        return self.position
+        
 class JammingEnv:
     def __init__(self, n_channels=5, max_steps=200, num_jammers=1):
         self.n_channels = n_channels
         self.state = np.zeros(n_channels)
         self.num_jammers = num_jammers
-        self.jammers = [Jammer(initial_position=np.random.randint(0, self.n_channels), sweep_direction=np.random.choice([-1, 1])) for _ in range(num_jammers)]
+        self.policy = 'sweeping'
+        self.jammers = [Jammer(self.policy, self.n_channels) for _ in range(num_jammers)]
         self.done = False
-        self.action_count = 0
         self.max_steps = max_steps
-        self.jamming_cnt = 0
+        self.collisions_cnt = 0
         
     def reset(self):
         if self.done == True:
             for jammer in self.jammers:
-                jammer.__init__(initial_position=np.random.randint(0, self.n_channels), sweep_direction=np.random.choice([-1, 1]))
+                jammer.__init__(self.policy, self.n_channels)
         self.state = np.zeros(self.n_channels)
         self.buffer_index = 0
         self.buffer_full = False
@@ -39,22 +55,29 @@ class JammingEnv:
     def step(self, action, time_step):
         reward = 0
         self.reset()
+        if time_step <= 100:
+            for jammer in self.jammers:
+                jammer.jam_channel()
+                self.state[jammer.position] = 1
+        else:
+            self.policy = 'random'
+            for jammer in self.jammers:
+                jammer.__init__(self.policy, self.n_channels)
+                jammer.jam_channel()
+                self.state[jammer.position] = 1
 
-        for jammer in self.jammers:
-            jammer.move(self.n_channels)
-            self.state[jammer.position] = 1
-
-        # print('state(env)',self.state)
-        # print('jamming count: ',self.jamming_cnt)
         if self.state[action] == 1:  # Jammed
             reward = -1
-            self.jamming_cnt += 1
         else:
             reward = 1
-        
-        # print(reward)
+            
+        if reward == -1:
+            self.collisions_cnt += 1
+            print(self.collisions_cnt)
+            
         if time_step >= self.max_steps:
             done = True
+            self.policy = 'sweeping'
             self.done = done
         else:
             done = False
