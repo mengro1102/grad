@@ -45,17 +45,17 @@ class JammingEnv:
             self.state[jammer.position] = 1
 
         # print('state(env)',self.state)
+        # print('jamming count: ',self.jamming_cnt)
         if self.state[action] == 1:  # Jammed
             reward = -1
             self.jamming_cnt += 1
         else:
             reward = 1
         
-        print(reward)
+        # print(reward)
         if time_step >= self.max_steps:
             done = True
             self.done = done
-            self.jamming_cnt = 0
         else:
             done = False
             self.done = done

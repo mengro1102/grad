@@ -10,9 +10,8 @@ time = (200)-1
 time_step = 0
 n_episodes = 50
 number_of_jammer = 1
-buffer_size = 5
 
-visualizer = RealTimeVisualizer(n_channels=channel)
+# visualizer = RealTimeVisualizer(n_channels=channel)
 env = JammingEnv(n_channels=channel,max_steps=time,num_jammers=number_of_jammer)
 agent = ActorCritic(state_size=channel,action_size=channel)
 scores = []
@@ -29,7 +28,7 @@ for episode in range(n_episodes):
     done = False
     time_step = 0
     reward_return = []
-
+    env.jamming_cnt = 0
     while not done:
         action = agent.get_action(state)
         next_state, reward, done = env.step(action, time_step)
@@ -44,7 +43,7 @@ for episode in range(n_episodes):
         if done:
             scores.append(episode_reward)
             print("Episode " + str(episode+1) + ": " + str(episode_reward))
-            print("Jammed of " + str(episode+1) + "Episode: " + str(env.jamming_cnt))
+            print("Jammed of Episode " + str(episode+1) + ": " + str(env.jamming_cnt))
             break
 
 ''' Graph Image Save'''

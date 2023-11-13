@@ -31,7 +31,7 @@ for episode in range(n_episodes):
     done = False
     time_step = 0
     reward_return = []
-
+    env.jamming_cnt = 0
     while not done:
         # print(time_step)
         buffer.add_state(state)
@@ -53,6 +53,7 @@ for episode in range(n_episodes):
         if done:
             scores.append(episode_reward)
             print("Episode " + str(episode+1) + ": " + str(episode_reward))
+            print("Jammed of Episode " + str(episode+1) + ": " + str(env.jamming_cnt))
             break
 
 ''' Graph Image Save'''
