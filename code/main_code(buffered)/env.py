@@ -21,6 +21,7 @@ class JammingEnv:
         self.done = False
         self.action_count = 0
         self.max_steps = max_steps
+        self.jamming_cnt = 0
         
     def reset(self):
         if self.done == True:
@@ -46,6 +47,7 @@ class JammingEnv:
         # print('state(env)',self.state)
         if self.state[action] == 1:  # Jammed
             reward = -1
+            self.jamming_cnt += 1
         else:
             reward = 1
         
@@ -53,6 +55,7 @@ class JammingEnv:
         if time_step >= self.max_steps:
             done = True
             self.done = done
+            self.jamming_cnt = 0
         else:
             done = False
             self.done = done

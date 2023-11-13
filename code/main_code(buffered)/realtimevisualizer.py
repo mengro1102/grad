@@ -15,7 +15,7 @@ class RealTimeVisualizer:
         self.max_timesteps = 50
         self.cmap = ListedColormap(['white', 'blue', 'red', 'gray'])
         self.norm = BoundaryNorm([0, 1, 2, 3, 4], self.cmap.N)
-        self.save_folder = 'C:/code/gard-1/image/buffered'
+        self.save_folder = 'C:/code/image/original'
         
     def update(self, time_step, state, agent_action):
         if not os.path.exists(self.save_folder):
@@ -61,7 +61,7 @@ class RealTimeVisualizer:
             self.ax.set_ylabel('Channels')
             self.ax.set_xlabel('Time step')
             
-            # plt.draw()
+            plt.draw()
             plt.pause(0.1)
             filepath = f"{self.save_folder}/image_{time_step}.png"
             plt.savefig(filepath)
@@ -85,7 +85,7 @@ class RealTimeVisualizer:
                 self.states.pop(0)  # Remove the oldest state
                 self.time.pop(0)  # Remove the corresponding time
             
-            self.ax.clear()
+            # self.ax.clear()
             # Create a colormap
             X, Y = np.meshgrid(np.arange(len(self.time)), np.arange(len(state)))
             self.ax.pcolormesh(X, Y, np.array(self.states).T, cmap=self.cmap, norm=self.norm, shading='auto', edgecolors='k')
@@ -106,7 +106,7 @@ class RealTimeVisualizer:
             self.ax.set_ylabel('Channels')
             self.ax.set_xlabel('Time step')
             
-            # plt.draw()
+            plt.draw()
             plt.pause(0.1)
             filepath = f"{self.save_folder}/image_{time_step}.png"
             plt.savefig(filepath)
