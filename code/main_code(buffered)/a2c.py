@@ -24,8 +24,7 @@ class Actor(Model):
         self.policy = tf.keras.layers.Dense(self.action_size,activation='softmax')
 
     def call(self, state):
-        x = tf.reshape(state, shape=(-1, self.state_size * buffer_size))
-        layer1 = self.layer1(x)
+        layer1 = self.layer1(state)
         layer2 = self.layer2(layer1)
         policy = self.policy(layer2)
         return policy
@@ -49,23 +48,6 @@ class CriticV(Model):
         value = self.value(layer2)
         return value
     
-class StateBuffer:
-    def __init__(self, buffer_size, state_size=5):
-        self.buffer_size = buffer_size
-        self.state_size = state_size
-        self.buffer = np.zeros((buffer_size, state_size))
-
-    def add_state(self, state):
-        # 새 상태를 버퍼에 추가하고 가장 오래된 상태를 삭제
-        self.buffer = np.roll(self.buffer, shift=1, axis=0)
-        self.buffer[0,:] = state[:self.state_size]
-
-    def get_buffer(self):
-        return self.buffer
-
-    def is_full(self):
-        return len(self.buffer) == self.buffer_size
-    
 class ActorCritic():
     def __init__(self, state_size = 5, action_size = 5):
         self.state_size = state_size
@@ -80,9 +62,9 @@ class ActorCritic():
         self.c_opt = tf.keras.optimizers.Adam(learning_rate=self.critic_lr)
         self.log_prob = None
         
-    def get_action(self, buffer):
-        prob = self.actor(np.array(buffer))
-        # print('action prob',prob.numpy()[0]) 
+    def get_action(self, state):
+        prob = self.actor(np.array([state]))
+        prob = prob.numpy()
         dist = tfp.distributions.Categorical(probs=prob, dtype=tf.float32)
         action = dist.sample()
         return int(action.numpy()[0]) 
@@ -93,12 +75,13 @@ class ActorCritic():
         loss = -log_prob*TD
         return loss
     
-    def train_step(self, buffer, action, reward, next_state, done):
+    def train_step(self, state, action, reward, next_state, done):
+        state = np.array([state])
         next_state = np.array([next_state])
        
         with tf.GradientTape() as tape1, tf.GradientTape() as tape2:
-            curr_P = self.actor(buffer, training=True)
-            curr_Q = self.critic(buffer,training=True)
+            curr_P = self.actor(state, training=True)
+            curr_Q = self.critic(state,training=True)
             next_Q = self.critic(next_state, training=True)
             expected_Q = reward + self.gamma*next_Q*(1-int(done))
             TD = expected_Q - curr_Q

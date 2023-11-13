@@ -15,7 +15,7 @@ class RealTimeVisualizer:
         self.max_timesteps = 50
         self.cmap = ListedColormap(['white', 'blue', 'red', 'gray'])
         self.norm = BoundaryNorm([0, 1, 2, 3, 4], self.cmap.N)
-        self.save_folder = 'C:/code/gard-1/image/buffered'
+        self.save_folder = 'C:\code\main_code\image'
         
     def update(self, time_step, state, agent_action):
         if not os.path.exists(self.save_folder):
@@ -23,8 +23,8 @@ class RealTimeVisualizer:
         self.time.append(time_step)
         if time_step == 0:
             colors = []
-            for i in range(len(state)):
-                s = state[i]
+            for i in range(len(state[0])):
+                s = state[0][i]
                 # print(state[0][i])
                 if s == 1:
                     if i == agent_action:
@@ -43,13 +43,14 @@ class RealTimeVisualizer:
                 self.time.pop(0)
             
             self.ax.clear()
-            X, Y = np.meshgrid(np.arange(len(self.time)), np.arange(len(state)))
+            X, Y = np.meshgrid(np.arange(len(self.time)), np.arange(len(state[0])))
             self.ax.pcolormesh(X, Y, np.array(self.states).T, cmap=self.cmap, norm=self.norm, shading='auto', edgecolors='k')
 
             self.ax.set_yticks(list(range(self.n_channels)))
             self.ax.set_yticklabels(list(range(1, self.n_channels+1)))
         
             if time_step <= self.max_timesteps:
+                # self.ax.set_xticklabels(list(range(0, self.max_timesteps+1, int(self.max_timesteps*.1))))
                 locs = list(range(0, self.max_timesteps+1, int(self.max_timesteps*.1)))
                 self.ax.set_xticks(locs)  # 레이블의 위치 설정
                 self.ax.set_xticklabels(locs)  # 레이블의 텍스트 설정
@@ -57,18 +58,20 @@ class RealTimeVisualizer:
                 start = time_step - self.max_timesteps    
                 self.ax.set_xticklabels(list(range(start, time_step + 1, int(self.max_timesteps*.1))))
             
+            # self.ax.set_xticks(list(range(0, self.max_timesteps+1, int(self.max_timesteps*.1))))
             self.ax.set_title('Real-time State & Agent Actions')
             self.ax.set_ylabel('Channels')
             self.ax.set_xlabel('Time step')
             
-            # plt.draw()
+            plt.draw()
             plt.pause(0.1)
             filepath = f"{self.save_folder}/image_{time_step}.png"
             plt.savefig(filepath)
         else:
             colors = []
-            for i in range(len(state)):  # Assuming state is a 2D numpy array with shape (1, num_states)
-                s = state[i]
+            for i in range(len(state[0])):  # Assuming state is a 2D numpy array with shape (1, num_states)
+                s = state[0][i]
+                print(state[0][i])
                 if s == 1:
                     if i == agent_action:
                         colors.append(3)  # gray (Agent action matches jammed state)
@@ -87,7 +90,7 @@ class RealTimeVisualizer:
             
             self.ax.clear()
             # Create a colormap
-            X, Y = np.meshgrid(np.arange(len(self.time)), np.arange(len(state)))
+            X, Y = np.meshgrid(np.arange(len(self.time)), np.arange(len(state[0])))
             self.ax.pcolormesh(X, Y, np.array(self.states).T, cmap=self.cmap, norm=self.norm, shading='auto', edgecolors='k')
 
             # y축 설정
@@ -106,7 +109,7 @@ class RealTimeVisualizer:
             self.ax.set_ylabel('Channels')
             self.ax.set_xlabel('Time step')
             
-            # plt.draw()
+            plt.draw()
             plt.pause(0.1)
             filepath = f"{self.save_folder}/image_{time_step}.png"
             plt.savefig(filepath)

@@ -1,12 +1,11 @@
 from env import JammingEnv
 from a2c import ActorCritic
-from a2c import StateBuffer
 from realtimevisualizer import RealTimeVisualizer
 import matplotlib.pyplot as plt
 import numpy as np
 
 ''' Initialize '''
-channel = 20
+channel = 10
 time = (200)-1
 time_step = 0
 n_episodes = 100
@@ -14,7 +13,6 @@ number_of_jammer = 2
 buffer_size = 5
 
 visualizer = RealTimeVisualizer(n_channels=channel)
-buffer = StateBuffer(buffer_size, channel)
 env = JammingEnv(n_channels=channel,max_steps=time,num_jammers=number_of_jammer)
 agent = ActorCritic(state_size=channel,action_size=channel)
 scores = []
@@ -33,18 +31,11 @@ for episode in range(n_episodes):
     reward_return = []
 
     while not done:
-        print(time_step)
-        buffer.add_state(state)
-        # print(buffer.get_buffer())
-        action = agent.get_action(buffer.get_buffer())
-        # TAKING ACTION
+        action = agent.get_action(state)
         next_state, reward, done = env.step(action, time_step)
-        
-        visualizer.update(time_step, state, action)
+        visualizer.update(time_step, next_state, action)
         time_step += 1
-        aloss, closs = agent.train_step(buffer.get_buffer(), action, reward, next_state, done)
-        # jammer_positions = env.get_jammer_positions()
-        # print(jammer_positions)
+        aloss, closs = agent.train_step(state, action, reward, next_state, done)
         state = next_state
         episode_reward += reward
         actor_loss.append(aloss[0].numpy())
@@ -79,5 +70,4 @@ plt.xlabel('Timestep')
 plt.savefig(img_path+'Figure_3('+str(channel)+'channel,'+str(n_episodes)+'Episode).png')
 plt.show()
 
-# agent.save_model("actor_model_test.h5", "critic_model_test.h5")
 print("Training finished.")
