@@ -57,7 +57,7 @@ class RealTimeVisualizer:
                 start = time_step - self.max_timesteps    
                 self.ax.set_xticklabels(list(range(start, time_step + 1, int(self.max_timesteps*.1))))
             
-            self.ax.set_title('Real-time State & Agent Actions')
+            self.ax.set_title('Environments State Transition')
             self.ax.set_ylabel('Channels')
             self.ax.set_xlabel('Time step')
             

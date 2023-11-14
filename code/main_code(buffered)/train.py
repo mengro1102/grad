@@ -4,10 +4,10 @@ from realtimevisualizer import RealTimeVisualizer
 import matplotlib.pyplot as plt
 import numpy as np
 
-channel = 10
+channel = 20
 time = (200)-1
 time_step = 0
-n_episodes = 10
+n_episodes = 100
 number_of_jammer = 2
 
 # visualizer = RealTimeVisualizer(n_channels=channel)
@@ -17,6 +17,9 @@ scores = []
 actor_loss = []
 critic_loss = []
 
+random_ag_scores = []
+random_ag_reward = 0
+
 for episode in range(n_episodes):
     state = env.reset()
     state = np.reshape(state, [1, channel])
@@ -25,7 +28,7 @@ for episode in range(n_episodes):
     time_step = 0
     reward_return = []
     env.collisions_cnt = 0
-    
+     
     while not done:
         action = agent.get_action(state)
         next_state, reward, done = env.step(action, time_step)

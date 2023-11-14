@@ -70,11 +70,12 @@ class JammingEnv:
             reward = -1
         else:
             reward = 1
-            
+        
+        ''' 
         if reward == -1:
             self.collisions_cnt += 1
             print(self.collisions_cnt)
-            
+        '''
         if time_step >= self.max_steps:
             done = True
             self.policy = 'sweeping'
