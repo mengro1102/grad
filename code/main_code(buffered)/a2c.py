@@ -6,7 +6,7 @@ from tensorflow import keras
 from keras import Model
 from env import JammingEnv
 
-hidden_size = 24
+hidden_size = 16
 buffer_size = 5
 class Actor(Model):
     def __init__(
@@ -21,11 +21,13 @@ class Actor(Model):
         self.action_size = action_size
         self.layer1 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.layer2 = tf.keras.layers.Dense(hidden_size, activation='relu')
+        self.layer3 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.policy = tf.keras.layers.Dense(self.action_size,activation='softmax')
 
     def call(self, state):
         layer1 = self.layer1(state)
         layer2 = self.layer2(layer1)
+        # layer3 = self.layer2(layer2)
         policy = self.policy(layer2)
         return policy
     
@@ -40,11 +42,13 @@ class CriticV(Model):
         self.state_size = state_size
         self.layer1 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.layer2 = tf.keras.layers.Dense(hidden_size, activation='relu')
+        self.layer3 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.value = tf.keras.layers.Dense(1, activation = None)
 
     def call(self, state):
         layer1 = self.layer1(state)
         layer2 = self.layer2(layer1)
+        # layer3 = self.layer3(layer2)
         value = self.value(layer2)
         return value
     
@@ -67,6 +71,12 @@ class ActorCritic():
         prob = prob.numpy()
         dist = tfp.distributions.Categorical(probs=prob, dtype=tf.float32)
         action = dist.sample()
+        print('action prob',prob)
+        if int(action.numpy()[0]) == 10:
+            np.random.randint(0, self.action_size)
+        else:
+            pass
+        # print('get_action:',action)
         return int(action.numpy()[0]) 
     
     def actor_loss(self, prob, action, TD):

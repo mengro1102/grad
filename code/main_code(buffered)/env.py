@@ -54,6 +54,7 @@ class JammingEnv:
    
     def step(self, action, time_step):
         reward = 0
+        
         self.reset()
         if time_step <= 100:
             for jammer in self.jammers:
@@ -70,7 +71,7 @@ class JammingEnv:
             reward = -1
         else:
             reward = 1
-        
+            
         ''' 
         if reward == -1:
             self.collisions_cnt += 1
@@ -78,7 +79,7 @@ class JammingEnv:
         '''
         if time_step >= self.max_steps:
             done = True
-            self.policy = 'sweeping'
+            #self.policy = 'sweeping'
             self.done = done
         else:
             done = False
