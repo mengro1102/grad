@@ -65,7 +65,6 @@ class JammingEnv:
             reward = -1
         else:
             reward = 1
-<<<<<<< HEAD
         '''
         if time_step > int(self.max_steps/2):            
             self.policy = 'sweeping'
@@ -74,9 +73,6 @@ class JammingEnv:
             # self.policy = 'sweeping'
             self.switching = False
         '''
-=======
-            
->>>>>>> 4763182922896133469ba02780c416f94f5f8a16
         ''' 
         if reward == -1:
             self.collisions_cnt += 1
@@ -84,11 +80,7 @@ class JammingEnv:
         '''
         if time_step >= self.max_steps:
             done = True
-<<<<<<< HEAD
             self.switching = True
-=======
-            #self.policy = 'sweeping'
->>>>>>> 4763182922896133469ba02780c416f94f5f8a16
             self.done = done
         else:
             done = False
