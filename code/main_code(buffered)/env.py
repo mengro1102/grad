@@ -36,16 +36,16 @@ class JammingEnv:
         self.policy = 'sweeping'
         self.jammers = [Jammer(self.policy, self.n_channels) for _ in range(num_jammers)]
         self.done = False
+        self.switching = False
         self.max_steps = max_steps
         self.collisions_cnt = 0
         
     def reset(self):
-        if self.done == True:
+        if self.switching == True:
             for jammer in self.jammers:
                 jammer.__init__(self.policy, self.n_channels)
         self.state = np.zeros(self.n_channels)
-        self.buffer_index = 0
-        self.buffer_full = False
+        
         return self.state
     
     def get_jammer_positions(self):
@@ -55,22 +55,23 @@ class JammingEnv:
     def step(self, action, time_step):
         reward = 0
         self.reset()
-        if time_step <= 100:
-            for jammer in self.jammers:
-                jammer.jam_channel()
-                self.state[jammer.position] = 1
-        else:
-            self.policy = 'random'
-            for jammer in self.jammers:
-                jammer.__init__(self.policy, self.n_channels)
-                jammer.jam_channel()
-                self.state[jammer.position] = 1
+
+        for jammer in self.jammers:
+            jammer.jam_channel()
+            self.state[jammer.position] = 1
 
         if self.state[action] == 1:  # Jammed
             reward = -1
         else:
             reward = 1
-        
+        '''
+        if time_step > int(self.max_steps/2):            
+            self.policy = 'sweeping'
+            self.switching = True
+        else:
+            # self.policy = 'sweeping'
+            self.switching = False
+        '''
         ''' 
         if reward == -1:
             self.collisions_cnt += 1
@@ -78,10 +79,11 @@ class JammingEnv:
         '''
         if time_step >= self.max_steps:
             done = True
-            self.policy = 'sweeping'
+            self.switching = True
             self.done = done
         else:
             done = False
+            self.switching = False
             self.done = done
         
         next_state = self.state

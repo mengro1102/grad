@@ -6,7 +6,7 @@ from tensorflow import keras
 from keras import Model
 from env import JammingEnv
 
-hidden_size = 24
+hidden_size = 16
 buffer_size = 5
 class Actor(Model):
     def __init__(

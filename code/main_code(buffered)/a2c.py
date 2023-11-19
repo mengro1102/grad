@@ -6,8 +6,8 @@ from tensorflow import keras
 from keras import Model
 from env import JammingEnv
 
-hidden_size = 24
-buffer_size = 5
+hidden_size = 32
+
 class Actor(Model):
     def __init__(
         self,
@@ -21,11 +21,13 @@ class Actor(Model):
         self.action_size = action_size
         self.layer1 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.layer2 = tf.keras.layers.Dense(hidden_size, activation='relu')
+        # self.layer3 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.policy = tf.keras.layers.Dense(self.action_size,activation='softmax')
 
     def call(self, state):
         layer1 = self.layer1(state)
         layer2 = self.layer2(layer1)
+        # layer3 = self.layer2(layer2)
         policy = self.policy(layer2)
         return policy
     
@@ -40,11 +42,13 @@ class CriticV(Model):
         self.state_size = state_size
         self.layer1 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.layer2 = tf.keras.layers.Dense(hidden_size, activation='relu')
+        # self.layer3 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.value = tf.keras.layers.Dense(1, activation = None)
 
     def call(self, state):
         layer1 = self.layer1(state)
         layer2 = self.layer2(layer1)
+        # layer3 = self.layer3(layer2)
         value = self.value(layer2)
         return value
     
@@ -52,8 +56,10 @@ class ActorCritic():
     def __init__(self, state_size = 5, action_size = 5):
         self.state_size = state_size
         self.action_size = action_size
-        self.actor_lr = 5e-3
-        self.critic_lr = 5e-3
+        # self.actor_lr = 5e-3
+        # self.critic_lr = 5e-3
+        self.actor_lr = 1e-4
+        self.critic_lr = 1e-4
         self.gamma = 0.99    # discount rate
         self.actor = Actor(self.state_size, self.action_size)
         self.critic = CriticV(self.state_size)
@@ -67,6 +73,8 @@ class ActorCritic():
         prob = prob.numpy()
         dist = tfp.distributions.Categorical(probs=prob, dtype=tf.float32)
         action = dist.sample()
+        print('prob:',prob)
+        
         return int(action.numpy()[0]) 
     
     def actor_loss(self, prob, action, TD):
@@ -84,7 +92,7 @@ class ActorCritic():
             curr_Q = self.critic(state,training=True)
             next_Q = self.critic(next_state, training=True)
             expected_Q = reward + self.gamma*next_Q*(1-int(done))
-            TD = expected_Q - curr_Q
+            TD =  curr_Q - expected_Q
             critic_loss = tf.keras.losses.MSE(expected_Q, curr_Q)
             actor_loss = self.actor_loss(curr_P, action, TD)
             

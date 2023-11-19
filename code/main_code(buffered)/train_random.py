@@ -86,7 +86,7 @@ window_size = 3  # Adjust the window size as needed
 rolling_avg_rewards = moving_average(scores, window_size)
 rolling_avg_random = moving_average(follow_ag_scores, window_size)
 rolling_avg_follow = moving_average(random_ag_scores, window_size)
-img_path = 'C:/code/result/'
+img_path = 'C:/code/image/'
 # Plotting
 plt.plot(rolling_avg_rewards, label=f'Rolling Average (Window Size {window_size})')
 plt.plot(scores, label='Episode Rewards')

@@ -4,13 +4,13 @@ from realtimevisualizer import RealTimeVisualizer
 import matplotlib.pyplot as plt
 import numpy as np
 
-channel = 20
-time = (200)-1
+channel = 10
+time = (100)-1
 time_step = 0
 n_episodes = 100
-number_of_jammer = 2
+number_of_jammer = 1
 
-# visualizer = RealTimeVisualizer(n_channels=channel)
+visualizer = RealTimeVisualizer(n_channels=channel)
 env = JammingEnv(n_channels=channel,max_steps=time,num_jammers=number_of_jammer)
 agent = ActorCritic(state_size=channel,action_size=channel)
 scores = []
@@ -32,7 +32,8 @@ for episode in range(n_episodes):
     while not done:
         action = agent.get_action(state)
         next_state, reward, done = env.step(action, time_step)
-        # visualizer.update(time_step, next_state, action)
+        # if episode == 99:
+            # visualizer.update(time_step, next_state, action)
         time_step += 1
         aloss, closs = agent.train_step(state, action, reward, next_state, done)
         state = next_state
@@ -42,8 +43,8 @@ for episode in range(n_episodes):
         
         if done:
             scores.append(episode_reward)
-            print("Episode " + str(episode+1) + ": " + str(episode_reward))
-            print("Jammed of Episode " + str(episode+1) + ": " + str(env.collisions_cnt))
+            print("Episode " + str(episode+1) + ": " + str(episode_reward)+"===========================")
+            # print("Jammed of Episode " + str(episode+1) + ": " + str(env.collisions_cnt))
             break
 
 def moving_average(a, n=3) :
@@ -51,30 +52,32 @@ def moving_average(a, n=3) :
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
 
-window_size = 3  # Adjust the window size as needed
+window_size = 2  # Adjust the window size as needed
 rolling_avg_rewards = moving_average(scores, window_size)
 
-img_path = 'C:/code/result/'
+visualizer.close()
+
+img_path = 'C:/code/image/'
 # Plotting
-plt.plot(rolling_avg_rewards, label=f'Rolling Average (Window Size {window_size})')
+plt.plot(rolling_avg_rewards, label=f'Rolling Average Reward')
 plt.plot(scores, label='Episode Rewards')
 plt.legend()
 
 # Save or show the plot
-plt.title('Rolling Average Reward and Episode Rewards')
+plt.title('100 Episode Simulation (Sweeping Jammer)')
 plt.ylabel('Reward')
 plt.xlabel('Episode')
 plt.savefig(img_path + 'Rolling_Average_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode).png')
 plt.show()
 
-plt.plot(actor_loss)
+plt.plot([item[0] for item in actor_loss], label='Actor Loss')
 plt.title('Actor Loss Graph (Policy Gradient Loss)')
 plt.ylabel('Loss')
 plt.xlabel('Timestep')
 plt.savefig(img_path+'Figure_2('+str(channel)+'channel,'+str(n_episodes)+'Episode).png')
 plt.show()
 
-plt.plot(critic_loss)
+plt.plot([item[0] for item in critic_loss], label='Critic Loss')
 plt.title('Critic Loss Graph (MSE Loss)')
 plt.ylabel('Loss')
 plt.xlabel('Timestep')
