@@ -6,8 +6,13 @@ from tensorflow import keras
 from keras import Model
 from env import JammingEnv
 
+<<<<<<< HEAD
 hidden_size = 32
 
+=======
+hidden_size = 16
+buffer_size = 5
+>>>>>>> 4763182922896133469ba02780c416f94f5f8a16
 class Actor(Model):
     def __init__(
         self,
@@ -21,7 +26,11 @@ class Actor(Model):
         self.action_size = action_size
         self.layer1 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.layer2 = tf.keras.layers.Dense(hidden_size, activation='relu')
+<<<<<<< HEAD
         # self.layer3 = tf.keras.layers.Dense(hidden_size, activation='relu')
+=======
+        self.layer3 = tf.keras.layers.Dense(hidden_size, activation='relu')
+>>>>>>> 4763182922896133469ba02780c416f94f5f8a16
         self.policy = tf.keras.layers.Dense(self.action_size,activation='softmax')
 
     def call(self, state):
@@ -42,7 +51,11 @@ class CriticV(Model):
         self.state_size = state_size
         self.layer1 = tf.keras.layers.Dense(hidden_size, activation='relu')
         self.layer2 = tf.keras.layers.Dense(hidden_size, activation='relu')
+<<<<<<< HEAD
         # self.layer3 = tf.keras.layers.Dense(hidden_size, activation='relu')
+=======
+        self.layer3 = tf.keras.layers.Dense(hidden_size, activation='relu')
+>>>>>>> 4763182922896133469ba02780c416f94f5f8a16
         self.value = tf.keras.layers.Dense(1, activation = None)
 
     def call(self, state):
@@ -73,8 +86,17 @@ class ActorCritic():
         prob = prob.numpy()
         dist = tfp.distributions.Categorical(probs=prob, dtype=tf.float32)
         action = dist.sample()
+<<<<<<< HEAD
         print('prob:',prob)
         
+=======
+        print('action prob',prob)
+        if int(action.numpy()[0]) == 10:
+            np.random.randint(0, self.action_size)
+        else:
+            pass
+        # print('get_action:',action)
+>>>>>>> 4763182922896133469ba02780c416f94f5f8a16
         return int(action.numpy()[0]) 
     
     def actor_loss(self, prob, action, TD):
