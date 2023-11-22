@@ -36,72 +36,67 @@ class JammingEnv:
         self.policy = 'sweeping'
         self.jammers = [Jammer(self.policy, self.n_channels) for _ in range(num_jammers)]
         self.done = False
-        self.max_steps = max_steps
         self.switching = False
-        self.collisions_cnt = 0
+        self.max_steps = max_steps
+        # self.collisions_cnt = 0
         
     def reset(self):
         if self.switching == True:
             for jammer in self.jammers:
                 jammer.__init__(self.policy, self.n_channels)
         self.state = np.zeros(self.n_channels)
+        
         return self.state
     
     def get_jammer_positions(self):
         positions = [jammer.position for jammer in self.jammers]
         return positions
    
-    def step(self, action, time_step, follow_ag_action=0, random_ag_action=0):
+    def step(self, action, time_step, follow_ag_action, random_ag_action):
         reward = 0
-        random_ag_reward = 0
         follow_ag_reward = 0
         
         self.reset()
+
         for jammer in self.jammers:
             jammer.jam_channel()
-            # print(jammer.policy)
             self.state[jammer.position] = 1
 
-        # print('action:',action,'\nstate:',self.state)
+        if self.state[follow_ag_action] == 1:
+            follow_ag_reward = -1
+        elif self.state[follow_ag_action] == 0:
+            follow_ag_reward = 1
+
+        if self.state[random_ag_action] == 1:
+            random_ag_reward = -1
+        elif self.state[random_ag_action] == 0:
+            random_ag_reward = 1
+
         if self.state[action] == 1:  # Jammed
             reward = -1
         else:
             reward = 1
-            
-        if self.state[follow_ag_action] == 1:
-            follow_ag_reward -= 1
+        '''
+        if time_step > int(self.max_steps/2):            
+            self.policy = 'sweeping'
+            self.switching = True
         else:
-            follow_ag_reward += 1
-            
-        if self.state[random_ag_action] == 1:
-            random_ag_reward -= 1
-        else:
-            random_ag_reward += 1
-            
+            # self.policy = 'sweeping'
+            self.switching = False
+        '''
         ''' 
         if reward == -1:
             self.collisions_cnt += 1
             print(self.collisions_cnt)
         '''
-        '''
-        if time_step > int(self.max_steps/2):            
-            self.policy = 'random'
-            self.switching = True
-        elif time_step == 0:
-            self.policy = 'sweeping'
-            self.switching = True
-        else:
-            self.policy = 'sweeping'
-            self.switching = False
-        '''
         if time_step >= self.max_steps:
             done = True
+            self.switching = True
             self.done = done
-            self.switching == True
         else:
             done = False
+            self.switching = False
             self.done = done
-            self.switching == False
         
         next_state = self.state
 

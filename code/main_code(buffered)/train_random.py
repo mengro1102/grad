@@ -17,7 +17,6 @@ time_step = 0
 n_episodes = 100
 number_of_jammer = 2
 
-# visualizer = RealTimeVisualizer(n_channels=channel)
 env = JammingEnv(n_channels=channel,max_steps=time,num_jammers=number_of_jammer)
 agent = ActorCritic(state_size=channel,action_size=channel)
 scores = []
@@ -55,8 +54,8 @@ for episode in range(n_episodes):
         time_step += 1
         aloss, closs = agent.train_step(state, action, reward, next_state, done)
         state = next_state
-        
         follow_ag_action = np.where(state == 1)[0][0]
+
         actor_loss.append(aloss[0][0].numpy())
         critic_loss.append(closs[0].numpy())
         
@@ -65,19 +64,16 @@ for episode in range(n_episodes):
             follow_ag_scores.append(follow_ag_epi_reward)
             random_ag_scores.append(random_ag_epi_reward)
             print("Episode " + str(episode+1) + ": " + str(episode_reward)+" ================================================================")
-            # print("Jammed of Episode " + str(episode+1) + ": " + str(env.collisions_cnt))
             break
 
 
 
 alpha = 0.2
 ema_result = exponential_moving_average(scores, alpha)
-ema_result_random = exponential_moving_average(follow_ag_scores, alpha)
-ema_result_follow = exponential_moving_average(random_ag_scores, alpha)
+ema_result_random = exponential_moving_average(random_ag_scores, alpha)
+ema_result_follow = exponential_moving_average(follow_ag_scores, alpha)
 
-# visualizer.close()
-
-img_path = 'C:/code/image/'
+img_path = ''
 # Plotting
 plt.plot(scores, label=f'Score (Actor-critic Agent)')
 plt.plot(random_ag_scores, label=f'Score (Random Agent)')
@@ -86,31 +82,17 @@ plt.legend()
 plt.title('Scroe Graph')
 plt.ylabel('Reward')
 plt.xlabel('Episode')
-plt.savefig(img_path + 'Score_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode).png')
+plt.savefig(img_path + 'Score_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
 
-plt.plot(ema_result, label=f'Rolling Average Reward (Actor-critic Agent)')
-plt.plot(ema_result_random, label=f'Rolling Average Reward (Random Agent)')
-plt.plot(ema_result_follow, label=f'Rolling Average Reward (Following Agent)')
+plt.plot(ema_result, label=f'Moving Average Reward (Actor-critic Agent)')
+plt.plot(ema_result_random, label=f'Moving Average Reward (Random Agent)')
+plt.plot(ema_result_follow, label=f'Moving Average Reward (Following Agent)')
 plt.legend()
 plt.title('Scroe Graph')
-plt.ylabel('Rolling Average Reward')
+plt.ylabel('Moving Average Reward')
 plt.xlabel('Episode')
-plt.savefig(img_path + 'Rolling_Average_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode).png')
-plt.show()
-'''
-plt.plot(actor_loss)
-plt.title('Actor Loss Graph (Policy Gradient Loss)')
-plt.ylabel('Loss')
-plt.xlabel('Timestep')
-plt.savefig(img_path+'Figure_2('+str(channel)+'channel,'+str(n_episodes)+'Episode).png')
+plt.savefig(img_path + 'Moving_Average_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
 
-plt.plot(critic_loss)
-plt.title('Critic Loss Graph (MSE Loss)')
-plt.ylabel('Loss')
-plt.xlabel('Timestep')
-plt.savefig(img_path+'Figure_3('+str(channel)+'channel,'+str(n_episodes)+'Episode).png')
-plt.show()
-'''
 print("Training finished.")
