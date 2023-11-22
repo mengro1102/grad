@@ -15,7 +15,7 @@ channel = 10
 time = (200)-1
 time_step = 0
 n_episodes = 100
-number_of_jammer = 2
+number_of_jammer = 5
 
 env = JammingEnv(n_channels=channel,max_steps=time,num_jammers=number_of_jammer)
 agent = ActorCritic(state_size=channel,action_size=channel)
