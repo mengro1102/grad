@@ -59,7 +59,7 @@ class JammingEnv:
         self.reset()
         for jammer in self.jammers:
             jammer.jam_channel()
-            print(jammer.policy)
+            # print(jammer.policy)
             self.state[jammer.position] = 1
 
         # print('action:',action,'\nstate:',self.state)

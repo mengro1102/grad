@@ -4,6 +4,13 @@ from realtimevisualizer import RealTimeVisualizer
 import matplotlib.pyplot as plt
 import numpy as np
 
+def exponential_moving_average(data, alpha):
+    ema = [data[0]]  # 초기값은 첫 번째 데이터 포인트로 설정
+    for i in range(1, len(data)):
+        ema.append(alpha * data[i] + (1 - alpha) * ema[-1])
+    return np.array(ema)
+
+
 channel = 10
 time = (200)-1
 time_step = 0
@@ -40,21 +47,17 @@ for episode in range(n_episodes):
         random_ag_action = np.random.randint(0, channel)
         
         next_state, reward, done, follow_ag_reward, random_ag_reward = env.step(action, time_step, follow_ag_action, random_ag_action)
-        # print(reward)
+        
         episode_reward += reward
         random_ag_epi_reward += random_ag_reward
         follow_ag_epi_reward += follow_ag_reward
-        #print('RL: ',episode_reward)
-        #print('Random: ',random_ag_epi_reward)
-        #print('Follow: ',follow_ag_epi_reward)
-        
-        # visualizer.update(time_step, next_state, action)
+                
         time_step += 1
         aloss, closs = agent.train_step(state, action, reward, next_state, done)
         state = next_state
         
         follow_ag_action = np.where(state == 1)[0][0]
-        actor_loss.append(aloss[0].numpy())
+        actor_loss.append(aloss[0][0].numpy())
         critic_loss.append(closs[0].numpy())
         
         if done:
@@ -65,24 +68,16 @@ for episode in range(n_episodes):
             # print("Jammed of Episode " + str(episode+1) + ": " + str(env.collisions_cnt))
             break
 
+
+
+alpha = 0.2
+ema_result = exponential_moving_average(scores, alpha)
+ema_result_random = exponential_moving_average(follow_ag_scores, alpha)
+ema_result_follow = exponential_moving_average(random_ag_scores, alpha)
+
 # visualizer.close()
 
-def moving_average(a, n=3):
-    ret = np.cumsum(a, dtype=float)
-    ret[n:] = ret[n:] - ret[:-n]
-    return ret[n - 1:] / n
-
-window_size = 4  # Adjust the window size as needed
-rolling_avg_rewards = moving_average(scores, window_size)
-<<<<<<< HEAD
-rolling_avg_random = moving_average(follow_ag_scores, window_size)
-rolling_avg_follow = moving_average(random_ag_scores, window_size)
 img_path = 'C:/code/image/'
-=======
-rolling_avg_follow = moving_average(follow_ag_scores, window_size)
-rolling_avg_random = moving_average(random_ag_scores, window_size)
-img_path = 'C:/code/'
->>>>>>> 4763182922896133469ba02780c416f94f5f8a16
 # Plotting
 plt.plot(scores, label=f'Score (Actor-critic Agent)')
 plt.plot(random_ag_scores, label=f'Score (Random Agent)')
@@ -94,16 +89,16 @@ plt.xlabel('Episode')
 plt.savefig(img_path + 'Score_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode).png')
 plt.show()
 
-plt.plot(rolling_avg_rewards, label=f'Rolling Average Reward (Actor-critic Agent)')
-plt.plot(rolling_avg_random, label=f'Rolling Average Reward (Random Agent)')
-plt.plot(rolling_avg_follow, label=f'Rolling Average Reward (Following Agent)')
+plt.plot(ema_result, label=f'Rolling Average Reward (Actor-critic Agent)')
+plt.plot(ema_result_random, label=f'Rolling Average Reward (Random Agent)')
+plt.plot(ema_result_follow, label=f'Rolling Average Reward (Following Agent)')
 plt.legend()
 plt.title('Scroe Graph')
 plt.ylabel('Rolling Average Reward')
 plt.xlabel('Episode')
 plt.savefig(img_path + 'Rolling_Average_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode).png')
 plt.show()
-
+'''
 plt.plot(actor_loss)
 plt.title('Actor Loss Graph (Policy Gradient Loss)')
 plt.ylabel('Loss')
@@ -117,5 +112,5 @@ plt.ylabel('Loss')
 plt.xlabel('Timestep')
 plt.savefig(img_path+'Figure_3('+str(channel)+'channel,'+str(n_episodes)+'Episode).png')
 plt.show()
-
+'''
 print("Training finished.")
