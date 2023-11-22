@@ -17,6 +17,7 @@ time_step = 0
 n_episodes = 100
 number_of_jammer = 5
 
+visualizer = RealTimeVisualizer(n_channels=channel)
 env = JammingEnv(n_channels=channel,max_steps=time,num_jammers=number_of_jammer)
 agent = ActorCritic(state_size=channel,action_size=channel)
 scores = []
@@ -46,7 +47,7 @@ for episode in range(n_episodes):
         random_ag_action = np.random.randint(0, channel)
         
         next_state, reward, done, follow_ag_reward, random_ag_reward = env.step(action, time_step, follow_ag_action, random_ag_action)
-        
+        #visualizer.update(time_step, next_state, follow_ag_action) # follow 정책 검증
         episode_reward += reward
         random_ag_epi_reward += random_ag_reward
         follow_ag_epi_reward += follow_ag_reward
