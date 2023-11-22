@@ -48,8 +48,8 @@ class ActorCritic():
     def __init__(self, state_size = 5, action_size = 5):
         self.state_size = state_size
         self.action_size = action_size
-        self.actor_lr = 5e-3
-        self.critic_lr = 5e-3
+        self.actor_lr = 1e-3
+        self.critic_lr = 1e-3
         self.gamma = 0.99    # discount rate
         self.actor = Actor(self.state_size, self.action_size)
         self.critic = CriticV(self.state_size)
@@ -68,12 +68,9 @@ class ActorCritic():
         return int(action.numpy()[0])
     
     def actor_loss(self, prob, action, TD):
-        # print('Action Prob:',prob.numpy()[0],', Action:',action,', TD:',TD.numpy()[0])
         dist = tfp.distributions.Categorical(probs=prob, dtype=tf.float32)
         log_prob = dist.log_prob(action)
-        # print('log_prob:',log_prob.numpy()[0])
         loss = -log_prob*TD
-        # print('actor loss:',loss.numpy()[0])
         return loss
     
     def train_step(self, state, action, reward, next_state, done):
@@ -85,15 +82,12 @@ class ActorCritic():
             curr_P = self.actor(state, training=True)
             curr_Q = self.critic(state,training=True)
             next_Q = self.critic(next_state, training=True)
-            # print('curr_Q:',curr_Q.numpy()[0], ', next_Q:',next_Q.numpy()[0],', Reward:',reward)
             expected_Q = reward + self.gamma*next_Q*(1-int(done))
             TD = expected_Q - curr_Q
             print('Reward:',reward)
             # critic loss
             critic_loss = tf.keras.losses.MSE(expected_Q, curr_Q)
-            print('critic loss:',critic_loss.numpy()[0])
             actor_loss = self.actor_loss(curr_P, action, TD)
-            print('actor loss:',actor_loss.numpy()[0])
             
         actorGrads = tape1.gradient(actor_loss,  self.actor.trainable_variables)
         criticGrads = tape2.gradient(critic_loss, self.critic.trainable_variables)

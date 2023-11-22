@@ -6,7 +6,7 @@ from tensorflow import keras
 from keras import Model
 from env import JammingEnv
 
-hidden_size = 16
+hidden_size = 24
 buffer_size = 5
 class Actor(Model):
     def __init__(
@@ -70,8 +70,8 @@ class ActorCritic():
     def __init__(self, state_size = 5, action_size = 5):
         self.state_size = state_size
         self.action_size = action_size
-        self.actor_lr = 5e-3
-        self.critic_lr = 5e-3
+        self.actor_lr = 1.5e-3
+        self.critic_lr = 1.5e-3
         self.gamma = 0.99    # discount rate
         self.actor = Actor(self.state_size, self.action_size)
         self.critic = CriticV(self.state_size)
@@ -82,7 +82,6 @@ class ActorCritic():
         
     def get_action(self, buffer):
         prob = self.actor(np.array(buffer))
-        # print('action prob',prob.numpy()[0]) 
         dist = tfp.distributions.Categorical(probs=prob, dtype=tf.float32)
         action = dist.sample()
         return int(action.numpy()[0]) 

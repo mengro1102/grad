@@ -15,7 +15,7 @@ class RealTimeVisualizer:
         self.max_timesteps = 50
         self.cmap = ListedColormap(['white', 'blue', 'red', 'gray'])
         self.norm = BoundaryNorm([0, 1, 2, 3, 4], self.cmap.N)
-        self.save_folder = 'C:/code/image/original'
+        self.save_folder = 'figure/gif_result'
         
     def update(self, time_step, state, agent_action):
         if not os.path.exists(self.save_folder):
