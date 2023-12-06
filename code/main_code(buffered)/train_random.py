@@ -76,6 +76,7 @@ ema_result_follow = exponential_moving_average(follow_ag_scores, alpha)
 
 img_path = ''
 # Plotting
+'''
 plt.rcParams.update({'font.size':15})
 plt.plot(scores, label=f'Actor-critic Agent')
 plt.plot(random_ag_scores, label=f'Random Agent')
@@ -87,16 +88,16 @@ plt.xlabel('Episode')
 plt.savefig(img_path + 'Score_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
 plt.close()
-
+'''
 plt.rcParams.update({'font.size':10})
 plt.plot(ema_result, label=f'Actor-critic Agent')
 plt.plot(ema_result_random, label=f'Random Agent')
 plt.plot(ema_result_follow, label=f'Following Agent')
 # plt.legend()
-plt.legend(bbox_to_anchor =(1.04, 1.09), ncol = 3) 
-# plt.title('Scroe Graph')
+plt.legend(bbox_to_anchor =(1.04, 1.09), ncol = 3)
 plt.ylabel('Moving Average Reward')
 plt.xlabel('Episode')
+plt.ylim(0, 200)
 plt.savefig(img_path + 'Moving_Average_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
 plt.close()
