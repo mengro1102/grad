@@ -39,7 +39,7 @@ for episode in range(n_episodes):
     done = False
     time_step = 0
     reward_return = []
-    env.collisions_cnt = 0
+    # env.collisions_cnt = 0
     follow_ag_action = np.random.randint(0, channel)
     
     while not done:
@@ -76,24 +76,29 @@ ema_result_follow = exponential_moving_average(follow_ag_scores, alpha)
 
 img_path = ''
 # Plotting
-plt.plot(scores, label=f'Score (Actor-critic Agent)')
-plt.plot(random_ag_scores, label=f'Score (Random Agent)')
-plt.plot(follow_ag_scores, label=f'Score (Following Agent)')
+plt.rcParams.update({'font.size':15})
+plt.plot(scores, label=f'Actor-critic Agent')
+plt.plot(random_ag_scores, label=f'Random Agent')
+plt.plot(follow_ag_scores, label=f'Following Agent')
 plt.legend()
 plt.title('Scroe Graph')
 plt.ylabel('Reward')
 plt.xlabel('Episode')
 plt.savefig(img_path + 'Score_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
+plt.close()
 
-plt.plot(ema_result, label=f'Moving Average Reward (Actor-critic Agent)')
-plt.plot(ema_result_random, label=f'Moving Average Reward (Random Agent)')
-plt.plot(ema_result_follow, label=f'Moving Average Reward (Following Agent)')
-plt.legend()
-plt.title('Scroe Graph')
+plt.rcParams.update({'font.size':10})
+plt.plot(ema_result, label=f'Actor-critic Agent')
+plt.plot(ema_result_random, label=f'Random Agent')
+plt.plot(ema_result_follow, label=f'Following Agent')
+# plt.legend()
+plt.legend(bbox_to_anchor =(1.04, 1.09), ncol = 3) 
+# plt.title('Scroe Graph')
 plt.ylabel('Moving Average Reward')
 plt.xlabel('Episode')
 plt.savefig(img_path + 'Moving_Average_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
+plt.close()
 
 print("Training finished.")

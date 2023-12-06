@@ -15,7 +15,7 @@ def exponential_moving_average(data, alpha):
 channel = 10
 time = (200)-1
 time_step = 0
-n_episodes = 100
+n_episodes = 50
 number_of_jammer = 5
 buffer_size = 5
 
@@ -42,8 +42,8 @@ for episode in range(n_episodes):
         buffer.add_state(state)
         action = agent.get_action(buffer.get_buffer())
         next_state, reward, done = env.step(action, time_step)
-        if episode == n_episodes-1:
-            visualizer.update(time_step, next_state, action)
+        #if episode == n_episodes-1:
+        #    visualizer.update(time_step, next_state, action)
         time_step += 1
         aloss, closs = agent.train_step(buffer.get_buffer(), action, reward, next_state, done)
         
@@ -64,17 +64,19 @@ ema_result = exponential_moving_average(scores, alpha)
 
 visualizer.close()
 ''' Graph Image Save'''
-img_path = 'buffered/'    
+img_path = 'buffered/'
 
-plt.plot(scores)
-plt.plot(ema_result)
-plt.title('Score Graph (Reward for each Episode)')
+# 1.5e-3
+plt.rcParams.update({'font.size':10})
+plt.plot(scores, label=f'Instant Reward')
+plt.plot(ema_result, label=f'Moving Average Reward')
 plt.ylabel('Reward')
 plt.xlabel('Episode')
-plt.savefig(img_path+'Figure_1('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
+plt.legend(bbox_to_anchor =(1.04, 1.09), ncol = 2)
+plt.savefig(img_path+'Buffered('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
 plt.close()
-
+'''
 plt.plot(actor_loss)
 plt.title('Actor Loss Graph (Policy Gradient Loss)')
 plt.ylabel('Loss')
@@ -90,5 +92,5 @@ plt.xlabel('Timestep')
 plt.savefig(img_path+'Figure_3('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
 plt.close()
-
+'''
 print("Training finished.")

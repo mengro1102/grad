@@ -17,7 +17,7 @@ class RealTimeVisualizer:
         self.norm = BoundaryNorm([0, 1, 2, 3, 4], self.cmap.N)
         self.save_folder = 'figure/gif_result'
         
-    def update(self, time_step, state, agent_action):
+    def update(self, time_step, state, agent_action, save=True):
         if not os.path.exists(self.save_folder):
             os.makedirs(self.save_folder)
         self.time.append(time_step)
@@ -64,7 +64,8 @@ class RealTimeVisualizer:
             plt.draw()
             plt.pause(0.0000001)
             filepath = f"{self.save_folder}/image_{time_step}.png"
-            plt.savefig(filepath)
+            if save == True:
+                plt.savefig(filepath)
             # self.close()
         else:
             colors = []
@@ -110,7 +111,8 @@ class RealTimeVisualizer:
             plt.draw()
             plt.pause(0.0000001)
             filepath = f"{self.save_folder}/image_{time_step}.png"
-            plt.savefig(filepath)
+            if save == True:
+                plt.savefig(filepath)
             # plt.savefig(filepath, bbox_inches="tight")
             # self.close()
             

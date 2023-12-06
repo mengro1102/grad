@@ -48,8 +48,8 @@ class ActorCritic():
     def __init__(self, state_size = 5, action_size = 5):
         self.state_size = state_size
         self.action_size = action_size
-        self.actor_lr = 1e-3
-        self.critic_lr = 1e-3
+        self.actor_lr = 1.5e-3
+        self.critic_lr = 1.5e-3
         self.gamma = 0.99    # discount rate
         self.actor = Actor(self.state_size, self.action_size)
         self.critic = CriticV(self.state_size)
@@ -84,7 +84,7 @@ class ActorCritic():
             next_Q = self.critic(next_state, training=True)
             expected_Q = reward + self.gamma*next_Q*(1-int(done))
             TD = expected_Q - curr_Q
-            print('Reward:',reward)
+            # print('Reward:',reward)
             # critic loss
             critic_loss = tf.keras.losses.MSE(expected_Q, curr_Q)
             actor_loss = self.actor_loss(curr_P, action, TD)
