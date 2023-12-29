@@ -1,6 +1,9 @@
-from env import JammingEnv
-from a2c_buffered import ActorCritic
-from a2c_buffered import StateBuffer
+# from env import JammingEnv
+from env_complex import JammingEnv
+# from a2c_buffered import ActorCritic
+# from a2c_buffered import StateBuffer
+from a2c_buffered_complex import ActorCritic
+from a2c_buffered_complex import StateBuffer
 from realtimevisualizer import RealTimeVisualizer
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,7 +18,7 @@ def exponential_moving_average(data, alpha):
 channel = 10
 time = (200)-1
 time_step = 0
-n_episodes = 50
+n_episodes = 100
 number_of_jammer = 5
 buffer_size = 5
 
@@ -42,8 +45,8 @@ for episode in range(n_episodes):
         buffer.add_state(state)
         action = agent.get_action(buffer.get_buffer())
         next_state, reward, done = env.step(action, time_step)
-        #if episode == n_episodes-1:
-        #    visualizer.update(time_step, next_state, action)
+        if episode == n_episodes-1:
+            visualizer.update(time_step, next_state, action)
         time_step += 1
         aloss, closs = agent.train_step(buffer.get_buffer(), action, reward, next_state, done)
         
@@ -64,16 +67,17 @@ ema_result = exponential_moving_average(scores, alpha)
 
 visualizer.close()
 ''' Graph Image Save'''
-img_path = 'buffered/'
+img_path = ''
 
 # 1.5e-3
-plt.rcParams.update({'font.size':10})
+plt.rcParams.update({'font.size':12})
 plt.plot(scores, label=f'Instant Reward')
 plt.plot(ema_result, label=f'Moving Average Reward')
 plt.ylabel('Reward')
 plt.xlabel('Episode')
-plt.ylim(0, 200)
-plt.legend(bbox_to_anchor =(1.04, 1.09), ncol = 2)
+# plt.ylim(-2.5, 202.5)
+# plt.xlim(-2.5, 102.5)
+plt.legend(bbox_to_anchor =(1, 1.1), ncol = 2)
 plt.savefig(img_path+'Buffered('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
 plt.close()

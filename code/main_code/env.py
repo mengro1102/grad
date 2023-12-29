@@ -44,7 +44,6 @@ class JammingEnv:
         if self.switching == True:
             for jammer in self.jammers:
                 jammer.__init__(self.policy, self.n_channels)
-                
         self.state = np.zeros(self.n_channels)
         
         return self.state
@@ -66,21 +65,26 @@ class JammingEnv:
             reward = -1
         else:
             reward = 1
-        
-        if time_step == int((self.max_steps/4)*1):            
-            self.switching = True
-        elif time_step == int((self.max_steps/4)*2):
-            self.switching = True
-        elif time_step == int((self.max_steps/4)*3):
+        '''
+        if time_step > int(self.max_steps/2):            
+            self.policy = 'sweeping'
             self.switching = True
         else:
+            # self.policy = 'sweeping'
             self.switching = False
-        
+        '''
+        ''' 
+        if reward == -1:
+            self.collisions_cnt += 1
+            print(self.collisions_cnt)
+        '''
         if time_step >= self.max_steps:
             done = True
+            self.switching = True
             self.done = done
         else:
             done = False
+            self.switching = False
             self.done = done
         
         next_state = self.state

@@ -1,4 +1,6 @@
+# from env_complex import JammingEnv
 from env import JammingEnv
+# from a2c_complex import ActorCritic
 from a2c import ActorCritic
 from realtimevisualizer import RealTimeVisualizer
 import matplotlib.pyplot as plt
@@ -10,22 +12,12 @@ def exponential_moving_average(data, alpha):
         ema.append(alpha * data[i] + (1 - alpha) * ema[-1])
     return np.array(ema)
 
-'''
-def moving_average(a, n=3) :
-    ret = np.cumsum(a, dtype=float)
-    ret[n:] = ret[n:] - ret[:-n]
-    return ret[n - 1:] / n
-
-window_size = 4  # Adjust the window size as needed
-rolling_avg_rewards = moving_average(scores, window_size)
-'''
-
 ''' Initialize '''
 channel = 10
 time = (200)-1
 time_step = 0
 n_episodes = 100
-number_of_jammer = 5
+number_of_jammer = 2
 
 visualizer = RealTimeVisualizer(n_channels=channel)
 env = JammingEnv(n_channels=channel,max_steps=time,num_jammers=number_of_jammer)
@@ -50,7 +42,7 @@ for episode in range(n_episodes):
         action = agent.get_action(state)
         next_state, reward, done = env.step(action, time_step)
         #if episode == n_episodes-1:
-        #    visualizer.update(time_step, next_state, action, save=False)
+        #   visualizer.update(time_step, next_state, action, save=False)
         time_step += 1
         aloss, closs = agent.train_step(state, action, reward, next_state, done)
         state = next_state
@@ -72,14 +64,15 @@ visualizer.close()
 img_path = ''
 
 # 1.5e-3
-plt.rcParams.update({'font.size':10})
+plt.rcParams.update({'font.size':12})
 plt.plot(scores, label=f'Instant Reward')
 plt.plot(ema_result, label=f'Moving Average Reward')
 plt.ylabel('Reward')
 plt.xlabel('Episode')
-plt.ylim(0, 200)
-plt.legend(bbox_to_anchor =(1.04, 1.09), ncol = 2)
-plt.savefig(img_path+'Conventional('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers-).png')
+# plt.ylim(-2.5, 202.5)
+# plt.xlim(-2.5, 102.5)
+# plt.legend(bbox_to_anchor =(1, 1.1), ncol = 2)
+plt.savefig('classic_Conventional('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
 
 print("Training finished.")

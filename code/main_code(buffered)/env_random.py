@@ -55,7 +55,7 @@ class JammingEnv:
     def step(self, action, time_step, follow_ag_action, random_ag_action):
         reward = 0
         follow_ag_reward = 0
-        
+        random_ag_reward = 0
         self.reset()
 
         for jammer in self.jammers:

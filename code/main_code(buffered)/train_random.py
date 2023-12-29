@@ -48,6 +48,7 @@ for episode in range(n_episodes):
         
         next_state, reward, done, follow_ag_reward, random_ag_reward = env.step(action, time_step, follow_ag_action, random_ag_action)
         # visualizer.update(time_step, next_state, follow_ag_action) # follow 정책 검증
+        print('instant reward:',reward)
         episode_reward += reward
         random_ag_epi_reward += random_ag_reward
         follow_ag_epi_reward += follow_ag_reward
@@ -89,15 +90,17 @@ plt.savefig(img_path + 'Score_Figure('+str(channel)+'channel,'+str(n_episodes)+'
 plt.show()
 plt.close()
 '''
-plt.rcParams.update({'font.size':10})
+plt.rcParams.update({'font.size':11})
 plt.plot(ema_result, label=f'Actor-critic Agent')
 plt.plot(ema_result_random, label=f'Random Agent')
 plt.plot(ema_result_follow, label=f'Following Agent')
 # plt.legend()
-plt.legend(bbox_to_anchor =(1.04, 1.09), ncol = 3)
+plt.legend(bbox_to_anchor =(1, 1.09), ncol = 3)
 plt.ylabel('Moving Average Reward')
 plt.xlabel('Episode')
-plt.ylim(0, 200)
+plt.ylim(-2.5, 202.5)
+plt.xlim(-2.5, 102.5)
+plt.rcParams['figure.figsize'] = (6.4, 4.8)
 plt.savefig(img_path + 'Moving_Average_Figure('+str(channel)+'channel,'+str(n_episodes)+'Episode,'+str(number_of_jammer)+'Jammers).png')
 plt.show()
 plt.close()

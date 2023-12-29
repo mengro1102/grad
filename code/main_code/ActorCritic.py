@@ -1,4 +1,4 @@
-from env import JammingEnv
+from code.main_code.env_complex import JammingEnv
 
 import numpy as np
 
